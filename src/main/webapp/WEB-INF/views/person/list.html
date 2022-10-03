@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library users</title>
+</head>
+<body>
+<h1>All library users:</h1>
+
+<div th:if="${people.isEmpty()}">No one library user</div>
+
+<!--Обход всех элементов врменная переменая, которая будет обходить все объекты коллекции : сама коллекция-->
+<!--Внутри тэга div работаем с конкретным объектом коллекции, который получаем во время обхода-->
+<div th:each="person : ${people}">
+    <!--Для каждого объекта будет ссылка, чтобы мы могли перейти на страницу конкретного пользователя -->
+    <!--Получаем id каждого человека и кладем его во временную переменную, которую передаем для ссылки -->
+    <a th:href="@{/people/{id}(id=${person.getId()})}" th:text="${person.getFullName()}"></a>
+</div>
+
+<a style="color: black" href="/people/new">Add new library user</a>
+
+</body>
+</html>

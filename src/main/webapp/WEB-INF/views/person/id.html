@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User page</title>
+</head>
+<body>
+<p th:text="${'Full Name: ' + person.getFullName()}">FullName</p>
+<p th:text="${'Age: ' +  person.getAge()}">Age</p>
+
+<p th:if="${books.isEmpty()}">The user has no books</p>
+<!--Данный блок будет показывать список книг пользователя, если такой имеется -->
+<div th:if="${!(books.isEmpty())}" >
+
+    <p style="color:darkslategrey" th:text="${'List of ' + person.getFullName + ' books'}"></p>
+    <div th:each="book : ${books}">
+        <!--Список книг состоит из ссылок на указанные книги-->
+        <a th:href="@{/book/{id}(id=${book.getId()})}" th:text="${book.getName()}"></a>
+    </div>
+
+</div>
+</body>
+</html>

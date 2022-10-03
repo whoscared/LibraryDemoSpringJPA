@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book page</title>
+</head>
+<body>
+<p th:text="${'Name: ' + book.getName()}">Name</p>
+<p th:text="${'Author: ' + book.getAuthor()}">Author</p>
+<p th:text="${'Year: ' + book.getYear()}">Year</p>
+
+<!--Создаем два блока с текстом (с помощью div) для разных условий-->
+<!--Данный блок для условия, если есть владелец книги.
+Мы указываем полное имя с помощью model, которую передали, а
+также добавляем возможность "освобожить книгу"-->
+<div th:if="${owner}">
+    <p th:text="${'Library owner: ' + owner.getFullName()}">Owner</p>
+    <form th:method="PATCH" th:action="@{/book/{id}/release(id = ${book.getId()})}">
+        <input type="submit" value="Release book">
+    </form>
+</div>
+<!--Используем форму, так как отправляем запрос при нажатии на элемент списка, а именно
+назначение владельца книги (указываем метод и действие)-->
+<!--Условие, которые проверяет, есть ли пользователи библиотеки-->
+<div th:if="${people}">
+    <form th:method="PATCH" th:action="@{/book/{id}/addowner(id = ${book.getId()})}">
+        <span>Choose book owner</span>
+        <br/>
+        <!--Название для списка, которое присваиваем по id для списка-->
+        <label for="people">Users list</label>
+        <!--Object это то, из чего состоит наш список, object должны также передавать с помощью model -->
+        <!--В данном случае, в object передали пустой объект класса Person-->
+        <!--Field это то поле, которое мы будем выбирать в нашем списке, которое будет лежать в аттрибуте Value-->
+        <select th:object="${person}" th:field="*{id}" id="people">
+            <!--Обход по списку книг благодаря each-->
+            <!--Отправляем на сервер Value, которое получаем у каждого объекта-->
+            <option th:each="person : ${people}" th:value="${person.getId()}"
+                    th:text="${person.getFullName()}">
+                <!--Текст, который будет в нашем списке-->
+            </option>
+        </select>
+        <!--Кнопка выбора-->
+        <input type="submit" value="Choose user"/>
+    </form>
+</div>
+<br/>
+<!--Для удаления также требуется форма с методом delete-->
+<form th:method="DELETE" th:action="@{/book/{id}(id = ${book.getId()})}">
+    <input type="submit" style="color:brown" value="Delete book">
+</form>
+</body>
+</html>
