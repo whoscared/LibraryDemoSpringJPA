@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Page</title>
 </head>
 <body>
-$END$
+<h1 style="color: darkolivegreen">Library books</h1>
+
+<div th:each="book : ${books}">
+  <a th:href="@{/book/{id}(id = ${book.getId()})}" th:text="${book.getName()} + ', '+ ${book.getYear()}"></a>
+</div>
+
+<br/>
+
+<p th:text="'page ' + ${page+1}"></p>
+
+<br/>
+
+<div th:with="Url=(${sort} ? '/book?sort_by_year=true' : '/book')">
+<div th:if="${previousPage >= 0}">
+    <a th:href="@{${Url}(page = ${previousPage},count =${count})}"> << previous page</a>
+</div>
+
+<div th:if="${nextPage}">
+    <a th:href="@{${Url}(page=${nextPage},count=${count})}"> >> next page</a>
+</div>
+</div>
+
 </body>
 </html>
