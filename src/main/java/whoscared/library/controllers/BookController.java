@@ -32,37 +32,47 @@ public class BookController {
 
     @GetMapping()
     public String allBooks(Model model,
-                           @RequestParam(value = "page", required = false) String page,
-                           @RequestParam(value = "count", required = false) String count,
+                           // "Integer" because value can be null
+                           @RequestParam(value = "page", required = false) Integer page,
+                           @RequestParam(value = "count", required = false) Integer count,
                            @RequestParam(value = "sort_by_year", required = false) boolean sortByYear) {
-        List<Book> books;
         Sort sort = Sort.by("name");
         if (sortByYear) {
             sort = Sort.by("year");
-            books = new ArrayList<>(bookService.getSortList(sort));
             model.addAttribute("sort", true);
-        } else {
-            books = new ArrayList<>(bookService.findAll());
         }
         if (count != null) {
-            int numberOfPage = Integer.parseInt(page);
-            Page<Book> bookPage = bookService.getPage(numberOfPage, Integer.parseInt(count), sort);
+            Page<Book> bookPage = bookService.getPage(page, count, sort);
             List<Book> bookListPage = new ArrayList<>(bookPage.getContent());
 
-            model.addAttribute("page", numberOfPage);
+            if (page > 0) {
+                model.addAttribute("previousPage", page - 1);
+            }
+            if (page < bookPage.getTotalPages() - 1) {
+                model.addAttribute("nextPage", page + 1);
+            }
 
-            if (numberOfPage > 0) {
-                model.addAttribute("previousPage", numberOfPage - 1);
-            }
-            if (numberOfPage < bookPage.getTotalPages() - 1) {
-                model.addAttribute("nextPage", numberOfPage + 1);
-            }
+            model.addAttribute("page", page);
             model.addAttribute("books", bookListPage);
             model.addAttribute("count", count);
+
             return "/book/page";
         }
-        model.addAttribute("books", books);
+        model.addAttribute("books", bookService.findAll(sort));
         return ("/book/list");
+    }
+
+    @PostMapping("/search")
+    public String search(Model model,
+                         @RequestParam(value = "queryString", required = false) String queryString) {
+        model.addAttribute("bookList", bookService.getByQuerySearch(queryString));
+        model.addAttribute("queryString", queryString);
+        return "/book/search";
+    }
+
+    @GetMapping("/search")
+    public String search() {
+        return "/book/search";
     }
 
     @GetMapping("/{id}")
@@ -112,7 +122,7 @@ public class BookController {
     public String addOwner(@PathVariable("id") int idBook,
                            @ModelAttribute("person") Person newOwner) {
         Book book = bookService.oneBook(idBook);
-        bookService.userGetBook(newOwner.getId(), book);
+        bookService.userGetBook(newOwner, idBook);
         return "redirect:/book/" + idBook;
     }
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>search page</title>
+</head>
+<body>
+<form th:method="post" th:action="@{/book/search}">
+    <label for="query">Search</label>
+    <!-- text from the form -> @RequestParam with the same "name" in controller -->
+    <input type="text" id="query" name="queryString"/>
+    <input type="submit" value="find!"/>
+</form>
+
+<div th:if="${bookList}">
+    <div th:if="${bookList.isEmpty()}">
+        <p>no books found</p>
+    </div>
+
+    <div>
+        <p>books found for this query</p>
+        <!--TODO: add a owner for book-->
+        <div th:each="book : ${bookList}">
+            <a th:href="@{/book/{id}(id = ${book.getId()})}" th:text="${book.getName()} + ', ' + ${book.getYear()}"></a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

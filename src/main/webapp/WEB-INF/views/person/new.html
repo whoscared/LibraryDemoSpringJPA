@@ -5,23 +5,20 @@
     <title>New user</title>
 </head>
 <body>
-<!-- Указываем запрос и действие, которое выполняется после запроса, то есть после POST-запроса,
- мы передаем данные /people
- В Object передаем объект, в который помещаем модель из контроллера-->
 <form th:method="POST" th:action="@{/people}" th:object="${person}">
     <label for="fullName">Name</label>
-    <!--В поле filed помещаем то, что будем задавать в форме
-    Запись *{} говорит о том, что такое поле есть у передаваемого нами объекта-->
     <input type="text" th:field="*{fullName}" id="fullName"/>
-    <!--Если выполняется условие if, текстовое окно показывается, иначе - нет-->
     <div style="color:gray" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">error fullName</div>
+
     <br/>
+
     <label for="year">Year of birth</label>
     <input type="text" th:field="*{year}" id="year"/>
     <div style="color:gray" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">error year</div>
+
     <br/>
+
     <input type="submit" value="Create!"/>
 </form>
-
 </body>
 </html>

@@ -9,25 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 import whoscared.library.models.Book;
 import whoscared.library.models.Person;
 import whoscared.library.repositories.BookRepository;
-import whoscared.library.repositories.PersonRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+//readOnly for all methods without Annotation @Transaction
+//Annotation for a particular method has higher precedence
 @Transactional(readOnly = true)
+//transactions start and end in service
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final PersonRepository personRepository;
 
     @Autowired
-    public BookService( BookRepository bookRepository, PersonRepository personRepository) {
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.personRepository = personRepository;
-    }
-    public List<Book> findAll() {
-        return bookRepository.findAll();
     }
 
     public Book oneBook(int id) {
@@ -46,37 +44,37 @@ public class BookService {
     }
 
     @Transactional
-    public void userGetBook(int idPerson, Book book) {
-        Person owner = personRepository.findById(idPerson).orElse(null);
-        owner.setBooks(book);
-        personRepository.save(owner);
-        bookRepository.save(book);
+    public void userGetBook(Person owner, int idBook) {
+        //this book in persistence context so no need .save()
+        bookRepository.findById(idBook).ifPresent(
+                book -> {
+                    book.setOwner(owner);
+                    book.setTime(new Date());
+                }
+        );
     }
 
     @Transactional
     public void releaseBook(int idBook) {
-        Book book = bookRepository.findById(idBook).orElse(null);
-        Person notOwner = book.getOwner();
-        book.release();
-        bookRepository.save(book);
-        personRepository.save(notOwner);
+        //this book in persistence context so no need .save()
+        bookRepository.findById(idBook).ifPresent(
+                book -> {
+                    book.setOwner(null);
+                    book.setTime(null);
+                    book.setArrears(false);
+                });
     }
 
-    public List<Book> getBooksByOwner(Person owner) {
-        return bookRepository.findByOwner(owner);
-    }
-
-
-    public Page<Book> getPage(int numberOfPage, int count) {
-        PageRequest pageRequest = PageRequest.of(numberOfPage, count, Sort.by("name"));
-        return bookRepository.findAll(pageRequest);
-    }
-    public Page<Book> getPage(int numberOfPage, int count, Sort sort){
+    public Page<Book> getPage(int numberOfPage, int count, Sort sort) {
         PageRequest pageRequest = PageRequest.of(numberOfPage, count, sort);
         return bookRepository.findAll(pageRequest);
     }
 
-    public List<Book> getSortList(Sort sort){
+    public List<Book> findAll(Sort sort) {
         return bookRepository.findAll(sort);
+    }
+
+    public List<Book> getByQuerySearch( String querySearch) {
+        return bookRepository.findByNameContains(querySearch);
     }
 }

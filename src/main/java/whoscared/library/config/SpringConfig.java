@@ -70,7 +70,7 @@ public class SpringConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getProperty("hibernate.driver_class"));
         dataSource.setUrl(environment.getProperty("hibernate.connection.url"));

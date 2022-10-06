@@ -7,7 +7,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import whoscared.library.models.Person;
 
-import whoscared.library.services.BookService;
 import whoscared.library.services.PersonService;
 
 import javax.validation.Valid;
@@ -17,12 +16,10 @@ import javax.validation.Valid;
 public class PeopleController {
 
     private final PersonService personService;
-    private final BookService bookService;
 
     @Autowired
-    public PeopleController(PersonService personService, BookService bookService) {
+    public PeopleController(PersonService personService) {
         this.personService = personService;
-        this.bookService = bookService;
     }
 
     @GetMapping()
@@ -36,10 +33,7 @@ public class PeopleController {
     public String onePerson(@PathVariable("id") int id, Model model) {
         Person person = personService.findOne(id);
         model.addAttribute("person", person);
-        if (person.getBooks() != null){
-            System.out.println(bookService.getBooksByOwner(person));
-            model.addAttribute("books", bookService.getBooksByOwner(person));
-        }
+        model.addAttribute("books", personService.getBookByPersonId(id).isEmpty() ? null : personService.getBookByPersonId(id));
         return "person/id";
     }
 
@@ -68,8 +62,8 @@ public class PeopleController {
     @PostMapping("/{id}")
     public String change(@PathVariable("id") int id,
                          @ModelAttribute("person") @Valid Person person,
-                         BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return ("/person/edit");
         }
         personService.update(id, person);

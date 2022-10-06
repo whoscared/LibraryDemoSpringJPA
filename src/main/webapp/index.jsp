@@ -19,5 +19,9 @@
 <br/>
 
 <a href="/book?sort_by_year=true&page=0&count=4">First sort page</a>
+
+<br/>
+
+<a href="/book/search">search</a>
 </body>
 </html>

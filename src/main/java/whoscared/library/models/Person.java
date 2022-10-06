@@ -39,21 +39,25 @@ public class Person {
     public int getId() {
         return id;
     }
+
     public String getFullName() {
         return fullName;
     }
+
     public int getYear() {
         return year;
     }
+
     public int getAge() {
         return (2022 - this.year);
     }
+
     public List<Book> getBooks() {
         return books;
     }
 
     public void setBooks(Book book) {
-        if (this.books == null){
+        if (this.books == null) {
             this.books = new ArrayList<>();
         }
         this.books.add(book);
@@ -63,9 +67,11 @@ public class Person {
     public void setId(int id) {
         this.id = id;
     }
+
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
     public void setYear(int year) {
         this.year = year;
     }
